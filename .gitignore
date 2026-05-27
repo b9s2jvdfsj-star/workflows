@@ -1,0 +1,21 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Terraform plan file
+tfplan
+
+# Local .env files
+.env
+.env.*
+
+# Node Modules
+node_modules/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

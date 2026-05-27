@@ -1,0 +1,29 @@
+{
+  "markets": [
+    {
+      "region": "USA",
+      "title": "Market Analysis",
+      "language": "en"
+    },
+    {
+      "region": "UK", 
+      "title": "Market Analysis",
+      "language": "en"
+    },
+    {
+      "region": "Australia",
+      "title": "Market Analysis", 
+      "language": "en"
+    },
+    {
+      "region": "Canada",
+      "title": "Market Analysis",
+      "language": "en"
+    },
+    {
+      "region": "Global",
+      "title": "Global Market Overview",
+      "language": "en"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+import React from 'react';
+import { Composition, registerRoot } from 'remotion';
+
+const MyComposition = () => {
+  return <div style={{ width: 1920, height: 1080, backgroundColor: 'white' }}>
+    <h1>Hello Remotion!</h1>
+  </div>;
+};
+
+const composition: Composition = {
+  id: 'my-composition',
+  component: MyComposition,
+  durationInFrames: 150,
+  fps: 30,
+  width: 1920,
+  height: 1080,
+};
+
+registerRoot(composition);
