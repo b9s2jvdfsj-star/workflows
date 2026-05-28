@@ -5,25 +5,24 @@
 This repository implements a two-phase pipeline for generating market analysis videos for a global audience (USA, UK, Europe, Canada, Australia).
 
 ### Phase 1: Factory (Kaggle)
-- **Location**: Kaggle notebook (kaggle_render.ipynb)
+- **Location**: Kaggle notebook (`kaggle_render.ipynb`)
 - **Purpose**: Generate high-fidelity AI asset clips (source videos, images, audio) using MuseTalk and LivePortrait.
-- **Output**: Rendered asset clips should be downloaded from Kaggle and placed in the local /rendered-assets folder.
-  - Optionally, organize by region: /rendered-assets/USA/, /rendered-assets/UK/, etc.
+- **Output**: Rendered asset clips should be downloaded from Kaggle and placed in the local `/rendered-assets` folder.
+  - Optionally, organize by region: `/rendered-assets/USA/`, `/rendered-assets/UK/`, etc.
 
 ### Phase 2: Architect (Remotion)
-- **Location**: Local Remotion project (/remotion)
-- **Purpose**: Assemble the final video by combining assets with programmatic templates (intros, lower-thirds, brand transitions).
-- **Trigger**: Run 
-ode assemble.js <region> (e.g., 
-ode assemble.js USA)
+- **Location**: Local Remotion project (`/remotion`)
+- **Purpose**: Assemble the final video by combining assets with programmatic templates (intros, lower-thirds, brand transitions) and generate metadata for upload.
+- **Trigger**: Run `node assemble.js <region> [topic]` (e.g., `node assemble.js USA "Market Analysis"`)
 - **Process**:
-  1. Reads assets from /rendered-assets (or /rendered-assets/<region> if region-specific folder exists).
+  1. Reads assets from `/rendered-assets` (or `/rendered-assets/<region>` if region-specific folder exists).
   2. Passes assets as props to the appropriate Remotion template (usa.tsx, uk.tsx, etc.).
-  3. Renders a 4K MP4 video to the /output folder.
+  3. Renders a 4K MP4 video to the `/output` folder.
+  4. Generates a metadata JSON file (title, description, tags) alongside the video for optimized upload.
 
 ## Directory Structure
 
-`
+```
 /assets                 # Static assets (if any)
 /rendered-assets        # Place Kaggle-generated assets here (manually transferred)
 /rendered-assets/USA    # Optional: region-specific assets
@@ -31,6 +30,5 @@ ode assemble.js USA)
 /remotion               # Remotion project (templates, compositions)
 /output                 # Final rendered videos
 /kaggle_render.ipynb    # Kaggle notebook for asset generation
-/assemble.js            # Node script to trigger Remotion assembly
+/assemble.js            # Node script to trigger Remotion assembly and metadata generation
 /.github/workflows/render.yml  # GitHub workflow to trigger Kaggle instructions
-

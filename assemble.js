@@ -2,9 +2,10 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Get region from command line argument or default to 'Global'
+// Get region and topic from command line arguments
 const args = process.argv.slice(2);
 let region = args[0] || 'Global';
+let topic = args[1] || 'Market Analysis';
 // Normalize region to match our templates
 region = region.trim();
 
@@ -35,9 +36,10 @@ if (fs.existsSync(regionAssetDir)) {
 // Prepare props object
 const props = {
   region,
+  topic,
   assets,
   // You can add other props like title, etc.
-  title: `Market Analysis - ${region}`
+  title: ${topic} - 
 };
 
 // Write props to a temporary file
@@ -62,11 +64,11 @@ const outputDir = path.resolve(__dirname, 'output');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
-const outputFile = path.join(outputDir, `${region.toLowerCase()}-output.mp4`);
+const outputFile = path.join(outputDir, ${region.toLowerCase()}-output.mp4);
 
 // Run remotion render
-console.log(`Rendering composition ${compositionId} for region ${region}...`);
-console.log(`Assets found: ${assets.length}`);
+console.log(Rendering composition  for region ...);
+console.log(Assets found: );
 const result = spawnSync('npx', [
   'remotion',
   'render',
@@ -81,7 +83,60 @@ if (result.error) {
   process.exit(1);
 }
 
-console.log(`Render completed! Output saved to: ${outputFile}`);
+console.log(Render completed! Output saved to: );
+
+// Generate metadata file
+const metadata = generateMetadata(region, topic);
+const metadataFile = path.join(outputDir, ${region.toLowerCase()}-output.metadata.json);
+fs.writeFileSync(metadataFile, JSON.stringify(metadata, null, 2));
+console.log(Metadata saved to: );
 
 // Clean up props file (optional)
 // fs.unlinkSync(propsFile);
+
+/**
+ * Generate metadata for the video
+ * @param {string} region - Target region (e.g., 'USA', 'UK')
+ * @param {string} topic - Video topic (e.g., 'Market Analysis')
+ * @returns {Object} Metadata object
+ */
+function generateMetadata(region, topic) {
+  const now = new Date().toISOString();
+  
+  // Standardized title (could be more elaborate)
+  const title = ${topic} -  Edition;
+  
+  // Keyword-optimized description with timestamp placeholders
+  // In a real scenario, these timestamps would match the video chapters
+  const description = [00:00] Introduction\\n[00:15]  Overview\\n[01:00] Key Market Trends\\n[02:30] Regional Focus: \\n[03:45] Actionable Insights\\n[04:30] Conclusion\\n\\nDisclaimer: For educational purposes only. Not financial advice.;
+  
+  // Relevant tags for global target regions
+  const baseTags = [
+    'finance',
+    'market analysis',
+    'investing',
+    'global markets',
+    region.toLowerCase(),
+    topic.toLowerCase().replace(/\s+/g, '-')
+  ];
+  
+  // Add region-specific tags
+  const regionTags = {
+    usa: ['USA', 'United States', 'NASDAQ', 'NYSE', 'Dow Jones'],
+    uk: ['UK', 'United Kingdom', 'FTSE', 'London Stock Exchange'],
+    australia: ['Australia', 'ASX', 'Australian Securities Exchange'],
+    canada: ['Canada', 'TSX', 'Toronto Stock Exchange'],
+    europe: ['Europe', 'EU', 'Euro Stoxx', 'European Markets']
+  };
+  
+  const tags = [...baseTags, ...(regionTags[region.toLowerCase()] || [])];
+  
+  return {
+    title,
+    description,
+    tags,
+    region,
+    topic,
+    generatedAt: now
+  };
+}
