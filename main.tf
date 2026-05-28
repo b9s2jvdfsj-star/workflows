@@ -6,6 +6,14 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket = "brassvalve-terraform-state"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "brassvalve-terraform-lock"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
