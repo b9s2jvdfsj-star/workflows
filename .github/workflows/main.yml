@@ -36,11 +36,8 @@ jobs:
       - name: Deploy and run video engine
         # Replace 'your-user' with your actual SSH user (e.g., ubuntu, ec2-user)
         # Replace 'your-server-address' with your actual cloud server address (e.g., ec2-xx-xx-xx-xx.compute-1.amazonaws.com)
-        # Replace '/path/to/your/script.sh' with the actual path to deploy.sh or run_engine.sh on the server
         run: |
-          ssh your-user@your-server-address 'bash -s' < ./deploy.sh
-          # Alternatively, if the script is in the repository and you want to run it remotely:
-          # ssh your-user@your-server-address 'cd /path/to/remote/repo && ./deploy.sh'
+          ssh your-user@your-server-address 'bash -s' < ./run_engine.sh
         env:
           # Pass environment variables to the remote session (they are already set in the job env)
           MUSE_TALK_API_KEY: ${{ secrets.MUSE_TALK_API_KEY }}
