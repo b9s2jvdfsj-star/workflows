@@ -1,0 +1,78 @@
+name: Cloud-Based Remotion Assembly
+
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Target region (e.g., USA, UK, Europe, Canada, Australia)'
+        required: true
+        default: 'USA'
+      topic:
+        description: 'Video topic (e.g., Market Analysis)'
+        required: false
+        default: 'Market Analysis'
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server host key to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          # NOTE: Replace with your actual cloud server address
+          ssh-keyscan -H ${{ secrets.SERVER_ADDRESS }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Run remote assembly script
+        id: remote-assembly
+        run: |
+          # This script runs on the cloud server
+          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_ADDRESS }} << 'EOF'
+            set -e
+            # Navigate to the repository directory
+            cd ~/global-video-engine || {
+              echo "Error: ~/global-video-engine directory not found on server"
+              exit 1
+            }
+            # Pull latest code
+            echo "Fetching latest code from main branch..."
+            git fetch origin
+            git reset --hard origin/main
+            git pull origin main
+            # Install Node.js dependencies
+            echo "Installing Node.js dependencies..."
+            npm ci
+            # Get inputs from the workflow
+            REGION="${{ inputs.region }}"
+            TOPIC="${{ inputs.topic }}"
+            if [ -z "$TOPIC" ]; then
+                TOPIC="Market Analysis"
+            fi
+            echo "Running assemble.js for region: $REGION, topic: $TOPIC"
+            node assemble.js "$REGION" "$TOPIC"
+            # The output is in ./output/${REGION}-output.mp4
+          EOF
+
+      - name: Download output from server
+        run: |
+          # Create a directory for the output
+          mkdir -p output
+          # Copy the output file from the server
+          scp ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_ADDRESS }}:~/global-video-engine/output/${{ inputs.region }}-output.mp4 ./output/
+          # Also copy the metadata file if it exists
+          scp ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_ADDRESS }}:~/global-video-engine/output/${{ inputs.region }}-output.metadata.json ./output/ 2>/dev/null || true
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remotion-output-${{ inputs.region }}
+          path: output/
+          retention-days: 1

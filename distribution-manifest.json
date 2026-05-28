@@ -1,0 +1,110 @@
+{
+  "videos": [
+    {
+      "filename": "usa-video.mp4",
+      "region": "USA",
+      "title": "Market Analysis",
+      "language": "en",
+      "description": "Market analysis tailored for USA audiences with relevant financial indicators and regional insights.",
+      "tags": ["finance", "market analysis", "investing", "global markets", "usa", "market analysis"],
+      "created": "2026-05-26T06:28:46Z",
+      "fileSize": 228180,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#002868",
+        "regionLabel": "USA"
+      }
+    },
+    {
+      "filename": "UK-video.mp4",
+      "region": "UK",
+      "title": "Market Analysis",
+      "language": "en",
+      "description": "In-depth market review featuring UK-specific financial metrics and investment perspectives for British audiences.",
+      "tags": ["finance", "market analysis", "investing", "global markets", "uk", "market analysis"],
+      "created": "2026-05-26T07:11:50Z",
+      "fileSize": 229004,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#3C8DBC",
+        "regionLabel": "UK"
+      }
+    },
+    {
+      "filename": "Australia-video.mp4",
+      "region": "Australia",
+      "title": "Market Analysis",
+      "language": "en",
+      "description": "Detailed economic outlook focusing on Australian Securities Exchange trends and Asia-Pacific market dynamics.",
+      "tags": ["finance", "market analysis", "investing", "global markets", "australia", "market analysis"],
+      "created": "2026-05-26T07:12:04Z",
+      "fileSize": 233091,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#0083CA",
+        "regionLabel": "Australia"
+      }
+    },
+    {
+      "filename": "Canada-video.mp4",
+      "region": "Canada",
+      "title": "Market Analysis",
+      "language": "en",
+      "description": "Canadian market analysis covering TSX performance and North American economic indicators.",
+      "tags": ["finance", "market analysis", "investing", "global markets", "canada", "market analysis"],
+      "created": "2026-05-26T07:12:19Z",
+      "fileSize": 230611,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#ff0000",
+        "regionLabel": "Canada"
+      }
+    },
+    {
+      "filename": "Global-video.mp4",
+      "region": "Global",
+      "title": "Global Market Overview",
+      "language": "en",
+      "description": "Comprehensive international market perspective suitable for worldwide audiences.",
+      "tags": ["finance", "market analysis", "investing", "global markets", "global", "market overview"],
+      "created": "2026-05-26T07:12:33Z",
+      "fileSize": 231071,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#2C3E50",
+        "regionLabel": "Global"
+      }
+    },
+    {
+      "filename": "final-production-01.mp4",
+      "region": "Global",
+      "title": "Precision Technical Restoration",
+      "language": "en",
+      "description": "High-fidelity restoration project featuring clean tool sounds and professional neutral voiceover.",
+      "tags": ["technical", "restoration", "precision", "engineering", "global", "technical restoration"],
+      "created": "2026-05-28T10:03:34Z",
+      "fileSize": 228180,
+      "format": "MP4 (H.264)",
+      "resolution": "1920x1080",
+      "frameRate": 30,
+      "styling": {
+        "accentColor": "#2C3E50",
+        "regionLabel": "Global"
+      }
+    }
+  ],
+  "generatedAt": "2026-05-28T10:26:22Z",
+  "totalVideos": 6,
+  "regions": ["USA", "UK", "Australia", "Canada", "Global"],
+  "projectTypes": ["Market Analysis", "Technical Restoration"]
+}

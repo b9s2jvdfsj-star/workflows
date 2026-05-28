@@ -1,95 +1,50 @@
-# Batch production script for GP TECH LAB Global Video Engine
-# This script iterates over a list of tech topics and target regions,
-# triggering remote Remotion assembly on the cloud server for each combination.
+# Batch production script for Global Video Engine
+# Iterates through all JSON config files in /config and renders corresponding videos to /out
 
-# === USER CONFIGURATION ===
-# Replace these values with your cloud server details
-$server = "your-server-address"          # e.g., "ec2-1-2-3-4.compute-1.amazonaws.com"
-$user   = "your-ssh-username"            # e.g., "ubuntu" or "opc"
-$key    = "C:\path\to\your\private\key"  # Full path to your SSH private key file
+# Ensure output directory exists
+New-Item -ItemType Directory -Path "out" -Force | Out-Null
 
-# Target regions (as defined in your Remotion templates)
-$regions = @("USA", "UK", "Europe", "Canada", "Australia")
+# Get all JSON files in config directory, excluding markets.json
+$configFiles = Get-ChildItem -Path "config" -Filter "*.json" | 
+               Where-Object { $_.Name -ne "markets.json" }
 
-# Path to the topics manifest
-$manifestPath = "manifests/tech-topics.json"
+Write-Host "Found $($configFiles.Count) config files to process." -ForegroundColor Green
 
-# === END USER CONFIGURATION ===
-
-# Load topics manifest
-if (-not (Test-Path $manifestPath)) {
-    Write-Error "Manifest file not found: $manifestPath"
-    exit 1
-}
-$topics = Get-Content $manifestPath -Raw | ConvertFrom-Json
-
-Write-Host "Starting batch production for $($topics.Count) topics across $($regions.Count) regions."
-Write-Host "Total renders to produce: $($topics.Count * $regions.Count)"
-Write-Host "======================================================="
-
-$renderCount = 0
-foreach ($topicObj in $topics) {
-    $topic = $topicObj.topic
-    $description = $topicObj.description
-    
-    foreach ($region in $regions) {
-        $renderCount++
-        Write-Host ("[{0}/{1}] Processing: {2} - {3}" -f $renderCount, ($topics.Count * $regions.Count), $topic, $region)
+foreach ($configFile in $configFiles) {
+    try {
+        # Load the JSON content to get region and title
+        $propsContent = Get-Content $configFile.FullName -Raw | ConvertFrom-Json
+        $region = $propsContent.region
+        $title = $propsContent.title
         
-        # Remote script to execute on the cloud server
-        $remoteScript = @"
-set -e
-cd ~/global-video-engine
-echo "Fetching latest code..."
-git fetch origin
-git reset --hard origin/main
-git pull origin main > /dev/null 2>&1
-echo "Installing dependencies..."
-npm ci > /dev/null 2>&1
-echo "Running assemble.js for region: $region, topic: '$topic'"
-node assemble.js "$region" "$topic"
-"@
-        
-        # Execute remote assembly
-        try {
-            ssh -i $key $user@$server $remoteScript
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "  ? Assembly successful"
-                
-                # Copy output files back to local machine (optional)
-                $outputDir = Join-Path -Path $PSScriptRoot -ChildPath "output"
-                if (-not (Test-Path $outputDir)) {
-                    New-Item -ItemType Directory -Path $outputDir | Out-Null
-                }
-                
-                $regionLower = $region.ToLower()
-                $videoPath = "~/global-video-engine/output/$regionLower-output.mp4"
-                $metadataPath = "~/global-video-engine/output/$regionLower-output.metadata.json"
-                
-                # Copy video
-                scp -i $key $user@$server:$videoPath "$outputDir\$topic - $region.mp4" 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "  ? Video copied to local output"
-                } else {
-                    Write-Warning "  ? Failed to copy video file"
-                }
-                
-                # Copy metadata if exists
-                scp -i $key $user@$server:$metadataPath "$outputDir\$topic - $region.metadata.json" 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "  ? Metadata copied to local output"
-                }
-            } else {
-                Write-Error "  ? Assembly failed with exit code $LASTEXITCODE"
-            }
-        } catch {
-            Write-Error "  ? SSH execution failed: $_"
+        # If region is not in the JSON, try to extract from filename
+        if (-not $region) {
+            $filename = $configFile.BaseName
+            # Remove common suffixes like -props
+            $region = $filename -replace '-props$', ''
         }
         
-        Write-Host ""  # Blank line for readability
+        # Define output filename
+        $outputFile = Join-Path -Path "out" -ChildPath "$region-video.mp4"
+        
+        Write-Host ("Rendering for {0}: {1}..." -f $region, $title) -ForegroundColor Cyan
+        
+        # Convert the props object back to JSON string for passing directly to --props
+        $propsJson = $propsContent | ConvertTo-Json -Compress
+        Write-Host ("DEBUG: Props JSON: $propsJson")
+        
+        # Render using Remotion with the config file as props using & operator
+        Write-Host ("DEBUG: Executing with & operator: npx remotion render remotion/index.tsx my-composition $outputFile --props='$propsJson'")
+        & npx remotion render remotion/index.tsx my-composition $outputFile --props='$propsJson'
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[SUCCESS] Completed: $outputFile" -ForegroundColor Green
+        } else {
+            Write-Error "[FAILED] Failed: $outputFile"
+        }
+    } catch {
+        Write-Error "Error processing $($configFile.Name): $_"
     }
 }
 
-Write-Host "======================================================="
-Write-Host "Batch production complete. Total renders attempted: $renderCount"
-Write-Host "Output files are in the ./output directory (if copying succeeded)."
+Write-Host "Batch rendering complete!" -ForegroundColor Green

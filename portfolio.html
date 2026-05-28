@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Video Engine - Portfolio</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Engine Section - Focus on the technology */
+        #engine {
+            padding: 80px 20px;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+        
+        #engine h2 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: #ffffff;
+            position: relative;
+            display: inline-block;
+        }
+        
+        #engine h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 2px;
+        }
+        
+        #engine p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .engine-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .engine-component {
+            background: #111111;
+            border-radius: 16px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .engine-component:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+        
+        .engine-component h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .engine-component p {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            line-height: 1.5;
+        }
+        
+        .engine-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        /* Portfolio Section */
+        #portfolio {
+            padding: 0 20px 100px;
+        }
+        
+        #portfolio h2 {
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            color: #ffffff;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        #portfolio h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 2px;
+        }
+        
+        .portfolio-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .tab-btn {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .video-card {
+            background: #111111;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000000;
+        }
+        
+        .video-thumbnail video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .video-card:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            background: rgba(79, 70, 229, 0.8);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .play-button:hover {
+            background: rgba(79, 70, 229, 1);
+            transform: scale(1.1);
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .video-info h3 span {
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        /* Region-specific badge colors */
+        .region-usa { background-color: #002868; color: white; }
+        .region-uk { background-color: #3C8DBC; color: white; }
+        .region-australia { background-color: #0083CA; color: white; }
+        .region-canada { background-color: #ff0000; color: white; }
+        .region-global { background-color: #2C3E50; color: white; }
+        
+        .video-info p {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Project Type Section */
+        .project-type {
+            margin-bottom: 50px;
+        }
+        
+        .project-type h3 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #ffffff;
+            position: relative;
+            display: inline-block;
+            padding-left: 15px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            #engine h2, #portfolio h2, .project-type h3 {
+                font-size: 1.8rem;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .engine-diagram {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .engine-component {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 60px 15px 30px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            #engine, #portfolio {
+                padding: 0 15px;
+            }
+            
+            #engine h2, #portfolio h2, .project-type h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>Global Video Engine</h1>
+            <p>Automated cinematic technical content for international audiences</p>
+        </div>
+    </header>
+    
+    <!-- Engine Section -->
+    <section id="engine">
+        <div class="container">
+            <h2>The Engine Behind the Production</h2>
+            <p>Global-Video-Engine is a sophisticated, self-hosted video automation platform designed to produce high-end, cinematic technical content for international audiences across the USA, UK, Canada, and Australia. Our engine transforms complex technical topics into polished, broadcast-quality videos that maintain consistent brand standards while incorporating subtle regional relevance.</p>
+            
+            <div class="engine-diagram">
+                <div class="engine-component">
+                    <div class="engine-icon">⚙️</div>
+                    <h3>Automation Pipeline</h3>
+                    <p>End-to-end automation from content generation to final rendering with precise technical specifications.</p>
+                </div>
+                <div class="engine-component">
+                    <div class="engine-icon">🌍</div>
+                    <h3>International Adaptation</h3>
+                    <p>Subtle regional adaptations that maintain global appeal while respecting local nuances.</p>
+                </div>
+                <div class="engine-component">
+                    <div class="engine-icon">🎬</div>
+                    <h3>Cinematic Quality</h3>
+                    <p>Professional-grade visuals with consistent framing, timing, and transitions.</p>
+                </div>
+                <div class="engine-component">
+                    <div class="engine-icon">🔊</div>
+                    <h3>Audio Excellence</h3>
+                    <p>High-fidelity ambient sounds and professional voiceovers for immersive experiences.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <div class="container">
+            <h2>Portfolio</h2>
+            
+            <div class="portfolio-tabs">
+                <button class="tab-btn active" data-filter="all">All Projects</button>
+                <button class="tab-btn" data-filter="market-analysis">Market Analysis</button>
+                <button class="tab-btn" data-filter="technical-restoration">Technical Restoration</button>
+                <button class="tab-btn" data-filter="usa">USA</button>
+                <button class="tab-btn" data-filter="uk">UK</button>
+                <button class="tab-btn" data-filter="canada">Canada</button>
+                <button class="tab-btn" data-filter="australia">Australia</button>
+                <button class="tab-btn" data-filter="global">Global</button>
+            </div>
+            
+            <!-- Market Analysis Projects -->
+            <div class="project-type market-analysis">
+                <h3>Market Analysis Series</h3>
+                <div class="portfolio-grid">
+                    <!-- USA Video -->
+                    <div class="video-card usa market-analysis" data-regions="usa" data-types="market-analysis">
+                        <div class="video-thumbnail">
+                            <video poster="out/usa-video.mp4#t=0.1" muted playsinline>
+                                <source src="out/usa-video.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Market Analysis - USA Edition<span class="region-usa">USA</span></h3>
+                            <p>Comprehensive market analysis tailored for USA audiences with relevant financial indicators and regional insights.</p>
+                            <div class="video-meta">
+                                <span>5/28/2026</span>
+                                <span>228 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- UK Video -->
+                    <div class="video-card uk market-analysis" data-regions="uk" data-types="market-analysis">
+                        <div class="video-thumbnail">
+                            <video poster="out/UK-video.mp4#t=0.1" muted playsinline>
+                                <source src="out/UK-video.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Market Analysis - UK Edition<span class="region-uk">UK</span></h3>
+                            <p>In-depth market review featuring UK-specific financial metrics and investment perspectives for British audiences.</p>
+                            <div class="video-meta">
+                                <span>5/26/2026</span>
+                                <span>229 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Australia Video -->
+                    <div class="video-card australia market-analysis" data-regions="australia" data-types="market-analysis">
+                        <div class="video-thumbnail">
+                            <video poster="out/Australia-video.mp4#t=0.1" muted playsinline>
+                                <source src="out/Australia-video.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Market Analysis - Australia Edition<span class="region-australia">Australia</span></h3>
+                            <p>Detailed economic outlook focusing on Australian Securities Exchange trends and Asia-Pacific market dynamics.</p>
+                            <div class="video-meta">
+                                <span>5/26/2026</span>
+                                <span>233 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Canada Video -->
+                    <div class="video-card canada market-analysis" data-regions="canada" data-types="market-analysis">
+                        <div class="video-thumbnail">
+                            <video poster="out/Canada-video.mp4#t=0.1" muted playsinline>
+                                <source src="out/Canada-video.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Market Analysis - Canada Edition<span class="region-canada">Canada</span></h3>
+                            <p>Canadian market analysis covering TSX performance and North American economic indicators.</p>
+                            <div class="video-meta">
+                                <span>5/26/2026</span>
+                                <span>231 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Global Video -->
+                    <div class="video-card global market-analysis" data-regions="global" data-types="market-analysis">
+                        <div class="video-thumbnail">
+                            <video poster="out/Global-video.mp4#t=0.1" muted playsinline>
+                                <source src="out/Global-video.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Global Market Overview<span class="region-global">Global</span></h3>
+                            <p>Comprehensive international market perspective suitable for worldwide audiences.</p>
+                            <div class="video-meta">
+                                <span>5/26/2026</span>
+                                <span>230 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technical Restoration Projects -->
+            <div class="project-type technical-restoration">
+                <h3>Technical Restoration Series</h3>
+                <div class="portfolio-grid">
+                    <!-- Final Production Video -->
+                    <div class="video-card global technical-restoration" data-regions="global" data-types="technical-restoration">
+                        <div class="video-thumbnail">
+                            <video poster="out/final-production-01.mp4#t=0.1" muted playsinline>
+                                <source src="out/final-production-01.mp4" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <button class="play-button" onclick="this.previousElementSibling.play()">▶</button>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>Precision Technical Restoration<span class="region-global">Global</span></h3>
+                            <p>High-fidelity restoration project featuring clean tool sounds and professional neutral voiceover.</p>
+                            <div class="video-meta">
+                                <span>5/28/2026</span>
+                                <span>228 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Global Video Engine. All rights reserved.</p>
+            <p>Produced with our self-hosted automation platform for premium technical content delivery.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.tab-btn');
+            const portfolioItems = document.querySelectorAll('.video-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    const filterValue = button.getAttribute('data-filter');
+                    
+                    // Filter portfolio items
+                    portfolioItems.forEach(item => {
+                        const matchesFilter = 
+                            filterValue === 'all' ||
+                            item.getAttribute('data-types') === filterValue ||
+                            item.getAttribute('data-regions') === filterValue;
+                        
+                        if (matchesFilter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Pause all videos when one starts playing
+            document.querySelectorAll('video').forEach(video => {
+                video.addEventListener('play', function() {
+                    document.querySelectorAll('video').forEach(v => {
+                        if (v !== this) {
+                            v.pause();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

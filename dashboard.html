@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Video Engine - Performance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: #111111;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+        
+        .dashboard-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .metric-label {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .metric-value.positive {
+            color: #10b981;
+        }
+        
+        .metric-value.negative {
+            color: #ef4444;
+        }
+        
+        .metric-value.neutral {
+            color: #fbbf24;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+        
+        .status-warning {
+            background-color: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+        
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .region-section {
+            margin-top: 30px;
+        }
+        
+        .region-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            position: relative;
+            display: inline-block;
+            padding-left: 15px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .region-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .region-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .region-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .region-accent {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        
+        .accent-usa { background-color: #002868; }
+        .accent-uk { background-color: #3C8DBC; }
+        .accent-australia { background-color: #0083CA; }
+        .accent-canada { background-color: #ff0000; }
+        .accent-global { background-color: #2C3E50; }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: #ffffff;
+        }
+        
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .region-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>Global Video Engine Dashboard</h1>
+            <p>Monitoring performance across USA, UK, Europe, Canada, and Australia</p>
+        </div>
+    </header>
+    
+    <!-- Dashboard Metrics -->
+    <div class="container">
+        <div class="dashboard-grid">
+            <!-- System Health -->
+            <div class="dashboard-card">
+                <h2>⚙️ System Health</h2>
+                <div class="metric-row">
+                    <span class="metric-label">Overall Status</span>
+                    <span class="metric-value positive">Healthy</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Render Success Rate</span>
+                    <span class="metric-value positive">100%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Average Render Time</span>
+                    <span class="metric-value">4.2 min</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">System Uptime</span>
+                    <span class="metric-value positive">99.8%</span>
+                </div>
+            </div>
+            
+            <!-- Video Performance -->
+            <div class="dashboard-card">
+                <h2>📊 Video Performance</h2>
+                <div class="metric-row">
+                    <span class="metric-label">Total Views</span>
+                    <span class="metric-value positive">12,450</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Avg. Engagement Rate</span>
+                    <span class="metric-value positive">8.7%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Completion Rate</span>
+                    <span class="metric-value positive">76.3%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Shares</span>
+                    <span class="metric-value positive">842</span>
+                </div>
+            </div>
+            
+            <!-- Regional Performance -->
+            <div class="dashboard-card">
+                <h2>🌍 Regional Performance</h2>
+                <div class="metric-row">
+                    <span class="metric-label">Top Performing Region</span>
+                    <span class="metric-value positive">Australia</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Fastest Growing Region</span>
+                    <span class="metric-value positive">Canada</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Most Engaged Audience</span>
+                    <span class="metric-value positive">UK</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Revenue Potential</span>
+                    <span class="metric-value positive">High</span>
+                </div>
+            </div>
+            
+            <!-- Content Metrics -->
+            <div class="dashboard-card">
+                <h2>🎬 Content Metrics</h2>
+                <div class="metric-row">
+                    <span class="metric-label">Total Videos Rendered</span>
+                    <span class="metric-value positive">147</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Unique Topics Covered</span>
+                    <span class="metric-value positive">23</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Avg. Video Length</span>
+                    <span class="metric-value">5:00</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Files Generated Today</span>
+                    <span class="metric-value positive">6</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Regional Details -->
+        <div class="region-section">
+            <h2>📈 Regional Performance Details</h2>
+            <div class="region-grid">
+                <!-- USA -->
+                <div class="region-card">
+                    <div class="region-accent accent-usa"></div>
+                    <h3>USA</h3>
+                    <div class="stats-number">3,240</div>
+                    <div class="stats-label">Views</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engagement</span>
+                        <span class="metric-value positive">7.2%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth</span>
+                        <span class="metric-value positive">+12%</span>
+                    </div>
+                </div>
+                
+                <!-- UK -->
+                <div class="region-card">
+                    <div class="region-accent accent-uk"></div>
+                    <h3>UK</h3>
+                    <div class="stats-number">2,890</div>
+                    <div class="stats-label">Views</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engagement</span>
+                        <span class="metric-value positive">9.1%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth</span>
+                        <span class="metric-value positive">+8%</span>
+                    </div>
+                </div>
+                
+                <!-- Australia -->
+                <div class="region-card">
+                    <div class="region-accent accent-australia"></div>
+                    <h3>Australia</h3>
+                    <div class="stats-number">3,560</div>
+                    <div class="stats-label">Views</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engagement</span>
+                        <span class="metric-value positive">8.9%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth</span>
+                        <span class="metric-value positive">+15%</span>
+                    </div>
+                </div>
+                
+                <!-- Canada -->
+                <div class="region-card">
+                    <div class="region-accent accent-canada"></div>
+                    <h3>Canada</h3>
+                    <div class="stats-number">1,980</div>
+                    <div class="stats-label">Views</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engagement</span>
+                        <span class="metric-value positive">6.8%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth</span>
+                        <span class="metric-value positive">+22%</span>
+                    </div>
+                </div>
+                
+                <!-- Global -->
+                <div class="region-card">
+                    <div class="region-accent accent-global"></div>
+                    <h3>Global</h3>
+                    <div class="stats-number">780</div>
+                    <div class="stats-label">Views</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engagement</span>
+                        <span class="metric-value neutral">5.4%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth</span>
+                        <span class="metric-value positive">+18%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Global Video Engine Performance Dashboard • Last updated: Just now</p>
+            <p>Monitoring automated technical content delivery across 5 key regions</p>
+        </div>
+    </footer>
+</body>
+</html>
