@@ -1,0 +1,47 @@
+name: Global Video Engine
+
+# Trigger the workflow manually or on push to main branch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  render-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    # Note: Never log environment variables directly in logs to avoid exposing secrets
+    # Use GitHub's secret masking instead of echoing variables
+    env:
+      # API Keys - set as secrets in GitHub Repository Settings > Secrets and variables > Actions
+      MUSE_TALK_API_KEY: ${{ secrets.MUSE_TALK_API_KEY }}
+      LIVE_PORTRAIT_KEY: ${{ secrets.LIVE_PORTRAIT_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server host key to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          # Replace 'your-server-address' with your actual cloud server address
+          # NOTE: For production, verify the host key fingerprint matches your server
+          ssh-keyscan -H your-server-address >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Deploy and run video engine
+        # Replace 'your-user' with your actual SSH user (e.g., ubuntu, ec2-user)
+        # Replace 'your-server-address' with your actual cloud server address (e.g., ec2-xx-xx-xx-xx.compute-1.amazonaws.com)
+        # Replace '/path/to/your/script.sh' with the actual path to deploy.sh or run_engine.sh on the server
+        run: |
+          ssh your-user@your-server-address 'bash -s' < ./deploy.sh
+          # Alternatively, if the script is in the repository and you want to run it remotely:
+          # ssh your-user@your-server-address 'cd /path/to/remote/repo && ./deploy.sh'
+        env:
+          # Pass environment variables to the remote session (they are already set in the job env)
+          MUSE_TALK_API_KEY: ${{ secrets.MUSE_TALK_API_KEY }}
+          LIVE_PORTRAIT_KEY: ${{ secrets.LIVE_PORTRAIT_KEY }}
