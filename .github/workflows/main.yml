@@ -1,44 +1,101 @@
-name: Global Video Engine
+name: Trigger Kaggle Render
 
-# Trigger the workflow manually or on push to main branch
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      run-notebook:
+        description: 'Run the Kaggle notebook (requires KAGGLE_USERNAME and KAGGLE_KEY secrets)'
+        required: false
+        default: 'false'
 
 jobs:
-  render-and-deploy:
+  setup-kaggle:
     runs-on: ubuntu-latest
-    environment: production
-    # Note: Never log environment variables directly in logs to avoid exposing secrets
-    # Use GitHub's secret masking instead of echoing variables
-    env:
-      # API Keys - set as secrets in GitHub Repository Settings > Secrets and variables > Actions
-      MUSE_TALK_API_KEY: ${{ secrets.MUSE_TALK_API_KEY }}
-      LIVE_PORTRAIT_KEY: ${{ secrets.LIVE_PORTRAIT_KEY }}
+    if: github.event.inputs.run-notebook == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.5.4
+      - name: Set up Kaggle API
+        uses: Kaggle/kaggle-action@v1.0.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          kaggle-username: ${{ secrets.KAGGLE_USERNAME }}
+          kaggle-key: ${{ secrets.KAGGLE_KEY }}
 
-      - name: Add server host key to known_hosts
+      - name: List files in repository
         run: |
-          mkdir -p ~/.ssh
-          # Replace 'your-server-address' with your actual cloud server address
-          # NOTE: For production, verify the host key fingerprint matches your server
-          ssh-keyscan -H your-server-address >> ~/.ssh/known_hosts 2>/dev/null || true
+          ls -la
+          echo "---"
+          ls -la kaggle_render.ipynb
 
-      - name: Deploy and run video engine
-        # Replace 'your-user' with your actual SSH user (e.g., ubuntu, ec2-user)
-        # Replace 'your-server-address' with your actual cloud server address (e.g., ec2-xx-xx-xx-xx.compute-1.amazonaws.com)
+      - name: Push notebook to Kaggle (as a kernel)
         run: |
-          ssh your-user@your-server-address 'bash -s' < ./run_engine.sh
-        env:
-          # Pass environment variables to the remote session (they are already set in the job env)
-          MUSE_TALK_API_KEY: ${{ secrets.MUSE_TALK_API_KEY }}
-          LIVE_PORTRAIT_KEY: ${{ secrets.LIVE_PORTRAIT_KEY }}
+          # Create a metadata file for the kernel
+          cat > kernel-metadata.json << 'EOF'
+          {
+            "id": "your-username/global-video-engine-render",
+            "title": "Global Video Engine Render",
+            "code_file": "kaggle_render.ipynb",
+            "language": {
+              "name": "python",
+              "version": "3.10.0"
+            },
+            "kernel_type": "notebook",
+            "is_private": true,
+            "enable_gpu": true,
+            "enable_internet": true,
+            "dataset_sources": [],
+            "competition_sources": [],
+            "kernel_sources": []
+          }
+          EOF
+
+          # Replace with your actual Kaggle username
+          # You'll need to set KAGGLE_USERNAME secret to your username
+          # The kernel will be uploaded to your Kaggle account
+          !kaggle kernels push -p . -u ${{ secrets.KAGGLE_USERNAME }}
+
+      - name: Start kernel execution
+        if: false  # Set to true when you want to auto-run
+        run: |
+          # Note: Auto-running kernels requires the kernel to already exist
+          # You typically need to run this manually in Kaggle UI after pushing
+          echo "To run the kernel:"
+          echo "1. Go to https://www.kaggle.com/${{ secrets.KAGGLE_USERNAME }}/"
+          echo "2. Find the 'global-video-engine-render' kernel"
+          echo "3. Click 'Run' to execute with GPU"
+          echo "4. Monitor progress in the Kaggle UI"
+
+  prepare-only:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.run-notebook != 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare for Kaggle execution
+        run: |
+          echo "📋 Global Video Engine - Kaggle Setup Complete"
+          echo ""
+          echo "📁 Repository files:"
+          ls -la
+          echo ""
+          echo "📓 Kaggle notebook prepared:"
+          ls -la kaggle_render.ipynb
+          echo ""
+          echo "🚀 To run on Kaggle:"
+          echo "1. Go to https://www.kaggle.com/code"
+          echo "2. Click 'New Notebook'"
+          echo "3. Upload this repository (or just the kaggle_render.ipynb file)"
+          echo "4. Add your secrets:"
+          echo "   - MUSE_TALK_API_KEY"
+          echo "   - LIVE_PORTRAIT_KEY"
+          echo "   - (Optional) KAGGLE_USERNAME and KAGGLE_KEY for API access"
+          echo "5. Execute the notebook cells in order"
+          echo "6. Ensure GPU is enabled in Settings → Accelerator"
+          echo ""
+          echo "💡 For automated execution:"
+          echo "   - Set up KAGGLE_USERNAME and KAGGLE_KEY secrets in this repo"
+          echo "   - Re-run this workflow with 'run-notebook' set to 'true'"
+          echo "   - This will push the notebook to your Kaggle account"
+          echo "   - You'll still need to click 'Run' in the Kaggle UI"
