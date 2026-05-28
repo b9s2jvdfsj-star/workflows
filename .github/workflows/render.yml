@@ -1,0 +1,30 @@
+name: Render Video on Kaggle
+
+on:
+  workflow_dispatch
+
+jobs:
+  render-instructions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render Instructions
+        run: |
+          echo "🎬 Global Video Engine Render Instructions"
+          echo ""
+          echo "📓 Your Kaggle notebook is ready at: kaggle_render.ipynb"
+          echo ""
+          echo "🚀 To render your video:"
+          echo "   1. Go to https://www.kaggle.com/code"
+          echo "   2. Click 'New Notebook' or upload the kaggle_render.ipynb file from this repository"
+          echo "   3. In the notebook, set your API keys:"
+          echo "        - MUSE_TALK_API_KEY"
+          echo "        - LIVE_PORTRAIT_KEY"
+          echo "   4. Ensure GPU is enabled (Settings → Accelerator → GPU)"
+          echo "   5. Run all cells"
+          echo "   6. Save your output video to Kaggle output or Google Drive"
+          echo ""
+          echo "💡 Tips:"
+          echo "   - Use Kaggle Secrets to store your API keys securely"
+          echo "   - The notebook is designed to pull the latest code from this repository"
+          echo "   - All rendering happens on Kaggle's free GPUs, no local usage"
