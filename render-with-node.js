@@ -15,8 +15,10 @@ renderMedia({
   outputLocation: path.resolve(__dirname, 'out/test-node-api.mp4'),
   codec: 'h264',
   imageFormat: 'jpeg',
-  // Note: For h264/h265, use crf instead of quality
-  crf: 18
+  ffmpegOptions: {
+    crf: 18,
+    preset: 'ultrafast',
+  },
 }).then(() => {
   console.log('Render completed successfully!');
   process.exit(0);
