@@ -25,7 +25,6 @@ jobs:
           choco install ffmpeg -y --no-progress
 
       - name: Run Render Pipeline
-<<<<<<< HEAD
         env:
           NODE_OPTIONS: "--max-old-space-size=3072"
           REMOTION_CODEC: "h264"
@@ -34,12 +33,6 @@ jobs:
           node -v
           Write-Host "Starting Render..."
           node ./render-with-node.js
-=======
-        run: |
-          $env:NODE_OPTIONS = "--max-old-space-size=4096"
-          $env:REMOTION_CODEC = "h264"
-          node render-with-node.js
->>>>>>> bca2b2cd551f53cb958624b195057d2ccddd4c4c
         shell: pwsh
 
       - name: Upload Final Video
@@ -47,8 +40,4 @@ jobs:
         with:
           name: rendered-output
           path: output/
-<<<<<<< HEAD
           retention-days: 7
-=======
-          retention-days: 7
->>>>>>> bca2b2cd551f53cb958624b195057d2ccddd4c4c
